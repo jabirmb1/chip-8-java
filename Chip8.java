@@ -6,12 +6,9 @@
  * The emulator uses a simple graphics system to display the output.
  **************************************************/
 
-import javax.swing.*; // For creating the window and handling graphics
-import java.awt.*; // For drawing the graphics
-import java.awt.event.KeyEvent; // For handling keyboard input
-import java.io.InputStream;
-import java.io.FileInputStream; // For reading the Chip-8 program from a file
-import java.io.IOException;
+import java.io.FileInputStream; // For creating the window and handling graphics
+import java.io.IOException; // For drawing the graphics
+import java.io.InputStream; // For handling keyboard input
 
 public class Chip8{
     // chip 8 specifications 
@@ -33,10 +30,13 @@ public class Chip8{
         Chip8 chip8 = new Chip8(); // create an intsnace 
         // load a chip 8 program into memory (for example, you can load a game or a test program)
         chip8.loadProgram(); // replace with actual path to your chip 8 program
-        // start the emulation loop 
-        while(true){
-            chip8.emulateCycle();
+        
+        // execute program
+        // fetch decode and execute cycle
+        while (true) { 
+            opcode = fetchOpcode(); // fetch the next opcode from memory
         }
+        
     }
 
     // load program into memory
@@ -47,11 +47,12 @@ public class Chip8{
 
         try ( InputStream inputFile = new FileInputStream(filePath);){
             int bytesRead;
+            int pointerInToMemory = programCounter; // start loading at 0x200 (512 in decimal)
             
             // read the file and load it into memory starting at 0x200
             while ((bytesRead = inputFile.read()) != -1) {
-                Chip8.addToMemory(programCounter, (byte) bytesRead); // add the byte read from the file to memory at the current program counter
-                programCounter++; // move to the next memory location
+                Chip8.addToMemory(pointerInToMemory, (byte) bytesRead); // add the byte read from the file to memory at the current program counter
+                pointerInToMemory++; // move to the next memory location
             }
 
         } catch (IOException e) {
