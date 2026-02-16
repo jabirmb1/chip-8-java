@@ -34,7 +34,35 @@ public class Chip8{
         // execute program
         // fetch decode and execute cycle
         while (true) { 
-            opcode = fetchOpcode(); // fetch the next opcode from memory
+            char opcodeFetched = chip8.festchOpcode(); // fetch the next opcode from memory
+            programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
+
+            // decode and execute the opcode
+            // utilise switches
+            switch(opcodeFetched & 0xF000) {
+                case 0x0000:
+                    chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
+                    break;
+                case 0x1000:
+                    // handle opcodes that start with 0x1
+                    break;
+                case 0x6000:
+                    // handle opcodes that start with 0x2
+                    break;
+                case 0x7000:
+                    // handle opcodes that start with 0x3
+                    break;
+                case 0xA000:
+                    // handle opcodes that start with 0x4
+                    break;
+                case 0xD000:
+                    // handle opcodes that start with 0x5
+                    break;
+                
+                // add more cases for other opcode categories as needed
+                default:
+                    System.out.println("Unknown opcode: " + Integer.toHexString(opcodeFetched));
+            }
         }
         
     }
@@ -49,9 +77,9 @@ public class Chip8{
             int bytesRead;
             int pointerInToMemory = programCounter; // start loading at 0x200 (512 in decimal)
             
-            // read the file and load it into memory starting at 0x200
+            // read the file and load it into memory starting at 0x200 
             while ((bytesRead = inputFile.read()) != -1) {
-                Chip8.addToMemory(pointerInToMemory, (byte) bytesRead); // add the byte read from the file to memory at the current program counter
+                Chip8.addToMemory(pointerInToMemory, (byte) bytesRead); // add the byte read from the file to memory at the current program counter size of bytes is 1 byte (8 bits)
                 pointerInToMemory++; // move to the next memory location
             }
 
@@ -60,6 +88,7 @@ public class Chip8{
         }
     }
 
+    // add to memory protected method
     public static void addToMemory(int address, byte value) {
         if (address >= 0 && address < MEMORY_SIZE) {
             memoryArray[address] = value; // add value to memory at the specified address
@@ -67,4 +96,18 @@ public class Chip8{
             System.out.println("Memory address out of bounds: " + address);
         }
     }
+
+    // fetch opcode from memory
+    public static char festchOpcode(){
+        char firstHalf = (char) (memoryArray[programCounter] & 0xFF); // fetch the first byte of the opcode
+        char secondHalf = (char) (memoryArray[programCounter + 1] & 0xFF); // fetch the second byte of the opcode
+        char opcode = (char) ((firstHalf << 8) | secondHalf); // combine the two bytes to form the full opcode
+        return opcode; 
+    }
+
+    // handle 00E0 opcode (clear the display)
+    public void handle00E0(char opcode) {
+        return;
+    }
+
 }
