@@ -1,4 +1,4 @@
-// vwersion 1.0 of the chip8 emulator in java
+// version 1.0 of the chip8 emulator in java
 // by: jabirmb1
 /**************************************************
  * This is a simple implementation of the Chip-8 emulator in Java.
@@ -9,6 +9,9 @@
 import java.io.FileInputStream; // For creating the window and handling graphics
 import java.io.IOException; // For drawing the graphics
 import java.io.InputStream; // For handling keyboard input
+import java.util.Stack;
+import javax.swing.JFrame;
+
 
 public class Chip8{
     // chip 8 specifications 
@@ -17,28 +20,38 @@ public class Chip8{
     private static final int NUM_REGISTERS = 16; // chip 8 has 16 registers (V0 to VF)
     private static char  indeRegisterI; // index register points at locations in memory
 
+    final int WIDTH =0;
+    final int HEIGHT = 0;
+
 
     // memory setup
     // use array szie of 4096 to represent the memory of the chip 8
     private static byte[] memoryArray = new byte[MEMORY_SIZE]; // 4KB of memory
 
     // stack setup for subroutine calls
-    private char[] stack = new char[16]; // chip 8 has a stack of 16 levels
+    private Stack<Integer> stackForRegisters = new Stack<>(); // stack to store return addresses for subroutine calls
+    
 
     // main- start the emulator
     public static void main(String[] args){
         Chip8 chip8 = new Chip8(); // create an intsnace 
+
+        // create display
+        chip8.createDisplay(); 
         // load a chip 8 program into memory (for example, you can load a game or a test program)
         chip8.loadProgram(); // replace with actual path to your chip 8 program
+        
+        
         
         // execute program
         // fetch decode and execute cycle
         while (true) { 
-            char opcodeFetched = chip8.festchOpcode(); // fetch the next opcode from memory
+            char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
             programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
 
             // decode and execute the opcode
             // utilise switches
+            // for now we will only implement a few opcodes to demonstrate the IBM logo program
             switch(opcodeFetched & 0xF000) {
                 case 0x0000:
                     chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
@@ -98,7 +111,14 @@ public class Chip8{
     }
 
     // fetch opcode from memory
-    public static char festchOpcode(){
+    // format:
+    // X Y N NN NNN
+    // X- lookup regisater Vx (0 to F)
+    // Y- lookup register Vy (0 to F)
+    // N- 4 bit number (0 to F)
+    // NN- 8 bit number (0 to FF)
+    // NNN- 12 bit number (0 to FFF) memory address
+    public static char fetchOpcode(){
         char firstHalf = (char) (memoryArray[programCounter] & 0xFF); // fetch the first byte of the opcode
         char secondHalf = (char) (memoryArray[programCounter + 1] & 0xFF); // fetch the second byte of the opcode
         char opcode = (char) ((firstHalf << 8) | secondHalf); // combine the two bytes to form the full opcode
@@ -109,5 +129,14 @@ public class Chip8{
     public void handle00E0(char opcode) {
         return;
     }
+
+    // createDisplay method to set up the graphics system for the emulator
+    public void createDisplay() {
+        JFrame frameGUI = new JFrame("CHIP 8 emulator");
+        frameGUI.setSize(WIDTH,HEIGHT);
+        
+    }
+
+
 
 }
