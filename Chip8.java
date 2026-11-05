@@ -57,7 +57,8 @@ public class Chip8{
                     chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
                     break;
                 case 0x1000:
-                    // handle opcodes that start with 0x1
+                    // jump to new PC
+                    chip8.handle0x1000(opcodeFetched);
                     break;
                 case 0x6000:
                     // sets a register
@@ -151,6 +152,10 @@ public class Chip8{
 
     public void handle0xA000(char opcode){
         indeRegisterI = (char) (opcode & 0x0FFF);
+    }
+
+    public void handle0x1000(char opcode){
+        programCounter = opcode & 0x0FFF;
     }
 
 
