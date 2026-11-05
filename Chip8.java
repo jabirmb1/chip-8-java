@@ -32,6 +32,10 @@ public class Chip8{
     public int getRegister(int index) {
         return registers[index];
     }
+
+    public int getIndexRegister() {
+        return indeRegisterI;
+    }
     
 
     public static void main(String[] args){
@@ -66,7 +70,8 @@ public class Chip8{
 
                     break;
                 case 0xA000:
-                    // handle opcodes that start with 0x4
+                    // sets register indeRegisterI
+                    chip8.handle0xA000(opcodeFetched);
                     break;
                 case 0xD000:
                     // handle opcodes that start with 0x5
@@ -143,6 +148,11 @@ public class Chip8{
         int nn3 = opcode & 0x00FF;
         registers[x3] = (registers[x3] + nn3) & 0xFF; // handles overflow out of 8 bit
     }
+
+    public void handle0xA000(char opcode){
+        indeRegisterI = (char) (opcode & 0x0FFF);
+    }
+
 
     public void createDisplay() {
         JFrame frameGUI = new JFrame("CHIP 8 emulator");

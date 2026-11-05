@@ -68,4 +68,14 @@ public class Chip8Test {
 
         assertEquals(0, chip8.getRegister(0));
     }
+
+    // Test 7: Set index register I to address 0x250
+    @Test
+    void testSetIndexRegister() {
+        Chip8 chip8 = new Chip8();
+
+        chip8.handle0xA000((char) 0xA250);
+
+        assertEquals(0x250, chip8.getIndexRegister());
+    }
 }
