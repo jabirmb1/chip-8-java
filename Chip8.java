@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 
 
 public class Chip8{
-    // chip 8 specifications 
     private static final int MEMORY_SIZE = 4096;
     static int programCounter = 512; // program counter starts at 0x200 (512 in decimal)
     private static final int NUM_REGISTERS = 16;
@@ -24,62 +23,54 @@ public class Chip8{
     final int HEIGHT = 320;
 
 
-    // memory setup
-    // use array szie of 4096 to represent the memory of the chip 8
-    private static byte[] memoryArray = new byte[MEMORY_SIZE]; // 4KB of memory
+    private static byte[] memoryArray = new byte[MEMORY_SIZE];
 
-    //display array
-    public static boolean[][] displayArray = new boolean[64][32];
+    public static boolean[][] displayArray = new boolean[32][64];
 
-    // stack setup for subroutine calls
     private Stack<Integer> stackForRegisters = new Stack<>(); // stack to store return addresses for subroutine calls
     
 
-    // main- start the emulator
     public static void main(String[] args){
-        Chip8 chip8 = new Chip8(); // create an intsnace 
+        Chip8 chip8 = new Chip8(); // create an intsnace
 
-        // create display
-        chip8.createDisplay(); 
-        // load a chip 8 program into memory (for example, you can load a game or a test program)
-        chip8.loadProgram(); // replace with actual path to your chip 8 program
+        chip8.createDisplay();
         
         
         
         // execute program
         // fetch decode and execute cycle
-        while (true) { 
-            char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
-            programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
-
-            // decode and execute the opcode
-            // utilise switches
-            // for now we will only implement a few opcodes to demonstrate the IBM logo program
-            switch(opcodeFetched & 0xF000) {
-                case 0x0000:
-                    chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
-                    break;
-                case 0x1000:
-                    // handle opcodes that start with 0x1
-                    break;
-                case 0x6000:
-                    // handle opcodes that start with 0x2
-                    break;
-                case 0x7000:
-                    // handle opcodes that start with 0x3
-                    break;
-                case 0xA000:
-                    // handle opcodes that start with 0x4
-                    break;
-                case 0xD000:
-                    // handle opcodes that start with 0x5
-                    break;
-                
-                // add more cases for other opcode categories as needed
-                default:
-                    System.out.println("Unknown opcode: " + Integer.toHexString(opcodeFetched));
-            }
-        }
+//        while (true) {
+//            char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
+//            programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
+//
+//            // decode and execute the opcode
+//            // utilise switches
+//            // for now we will only implement a few opcodes to demonstrate the IBM logo program
+//            switch(opcodeFetched & 0xF000) {
+//                case 0x0000:
+//                    chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
+//                    break;
+//                case 0x1000:
+//                    // handle opcodes that start with 0x1
+//                    break;
+//                case 0x6000:
+//                    // handle opcodes that start with 0x2
+//                    break;
+//                case 0x7000:
+//                    // handle opcodes that start with 0x3
+//                    break;
+//                case 0xA000:
+//                    // handle opcodes that start with 0x4
+//                    break;
+//                case 0xD000:
+//                    // handle opcodes that start with 0x5
+//                    break;
+//
+//                // add more cases for other opcode categories as needed
+//                default:
+//                    System.out.println("Unknown opcode: " + Integer.toHexString(opcodeFetched));
+//            }
+//        }
         
     }
 
@@ -141,6 +132,8 @@ public class Chip8{
     public void createDisplay() {
         JFrame frameGUI = new JFrame("CHIP 8 emulator");
         frameGUI.setSize(WIDTH,HEIGHT);
+        displayArray[5][10] = true;
+        displayArray[5][11] = true;
 
         Chip8Display chip8Display = new Chip8Display(displayArray);
 
