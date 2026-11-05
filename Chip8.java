@@ -24,60 +24,59 @@ public class Chip8{
 
 
     private static byte[] memoryArray = new byte[MEMORY_SIZE];
-
+    private static int[] registers = new int[NUM_REGISTERS]; // v0 to vf
     public static boolean[][] displayArray = new boolean[32][64];
 
-    private Stack<Integer> stackForRegisters = new Stack<>(); // stack to store return addresses for subroutine calls
+    private Stack<Integer> stackForRegisters = new Stack<>();
     
 
     public static void main(String[] args){
-        Chip8 chip8 = new Chip8(); // create an intsnace
+        Chip8 chip8 = new Chip8();
 
         chip8.createDisplay();
         
         
-        
-        // execute program
-        // fetch decode and execute cycle
-//        while (true) {
-//            char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
-//            programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
-//
-//            // decode and execute the opcode
-//            // utilise switches
-//            // for now we will only implement a few opcodes to demonstrate the IBM logo program
-//            switch(opcodeFetched & 0xF000) {
-//                case 0x0000:
-//                    chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
-//                    break;
-//                case 0x1000:
-//                    // handle opcodes that start with 0x1
-//                    break;
-//                case 0x6000:
-//                    // handle opcodes that start with 0x2
-//                    break;
-//                case 0x7000:
-//                    // handle opcodes that start with 0x3
-//                    break;
-//                case 0xA000:
-//                    // handle opcodes that start with 0x4
-//                    break;
-//                case 0xD000:
-//                    // handle opcodes that start with 0x5
-//                    break;
-//
-//                // add more cases for other opcode categories as needed
-//                default:
-//                    System.out.println("Unknown opcode: " + Integer.toHexString(opcodeFetched));
-//            }
-//        }
+
+        while (true) {
+            char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
+            programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
+
+            // decode and execute the opcode
+            // utilise switches
+            // for now we will only implement a few opcodes to demonstrate the IBM logo program
+            switch(opcodeFetched & 0xF000) {
+                case 0x0000:
+                    chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
+                    break;
+                case 0x1000:
+                    // handle opcodes that start with 0x1
+                    break;
+                case 0x6000:
+                    int x = (opcodeFetched & 0x0F00) >> 8;
+                    int nn = opcodeFetched & 0x00FF;
+                    registers[x] = nn;
+
+                    break;
+                case 0x7000:
+                    // handle opcodes that start with 0x3
+                    break;
+                case 0xA000:
+                    // handle opcodes that start with 0x4
+                    break;
+                case 0xD000:
+                    // handle opcodes that start with 0x5
+                    break;
+
+                // add more cases for other opcode categories as needed
+                default:
+                    System.out.println("Unknown opcode: " + Integer.toHexString(opcodeFetched));
+            }
+        }
         
     }
 
     // load program into memory
     public static void loadProgram(){
-        // code to read the chip 8 program from the specified file path and load it into memory starting at 0x200
-        // you can use FileInputStream or any other method to read the file and store it in the memory array
         String filePath = "C:\\Users\\jabir\\dev\\IBMlogo.ch8"; 
 
         try ( InputStream inputFile = new FileInputStream(filePath);){
@@ -119,7 +118,7 @@ public class Chip8{
         return opcode; 
     }
 
-    // handle 00E0 opcode (clear the display)
+    // clear the display
     public void handle00E0(char opcode) {
         for (int row = 0; row < 32; row++) {
             for (int col = 0; col < 64; col++) {
@@ -128,7 +127,6 @@ public class Chip8{
         }
     }
 
-    // createDisplay method to set up the graphics system for the emulator
     public void createDisplay() {
         JFrame frameGUI = new JFrame("CHIP 8 emulator");
         frameGUI.setSize(WIDTH,HEIGHT);
