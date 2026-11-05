@@ -15,9 +15,9 @@ import javax.swing.JFrame;
 
 public class Chip8{
     private static final int MEMORY_SIZE = 4096;
-    static int programCounter = 512; // program counter starts at 0x200 (512 in decimal)
+    static int programCounter = 512; //  0x200 (512 in decimal) - where next instruction is
     private static final int NUM_REGISTERS = 16;
-    private static char  indeRegisterI;
+    private static char  indeRegisterI; // where the sprite data is
 
     final int WIDTH =640;
     final int HEIGHT = 320;
@@ -156,6 +156,41 @@ public class Chip8{
 
     public void handle0x1000(char opcode){
         programCounter = opcode & 0x0FFF;
+    }
+
+    public void handle0xD000(char opcode){
+        int xValRegister = (opcode & 0x0F00) >> 8;
+        int yValRegister = (opcode & 0x00F0) >> 4;
+        int N = opcode & 0x000F;
+
+        registers[15] = 0;
+
+        int xCord = registers[xValRegister];
+        int yCord = registers[yValRegister];
+
+        for (int i = 0; i < N; i++){
+            int cur8bit = memoryArray[indeRegisterI + i] & 0xFF;
+
+            for (int j = 0; j< 8; j++){
+                int currentBit = (cur8bit >> (7 - j)) & 0x01;
+                if (currentBit == 1){
+                    int pixelX = xCord + j;
+                    int pixelY = yCord + i;
+
+                    if (pixelX >= 64 || pixelY >= 32) {
+                        continue;
+                    }
+
+                    if(displayArray[pixelY][pixelX]){
+                        registers[15] = 1;
+                    }
+
+                    displayArray[pixelY][pixelX] = !displayArray[pixelY][pixelX];
+                }
+            }
+
+        }
+
     }
 
 
