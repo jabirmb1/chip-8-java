@@ -15,18 +15,21 @@ import javax.swing.JFrame;
 
 public class Chip8{
     // chip 8 specifications 
-    private static final int MEMORY_SIZE = 4096; // chip 8 has 4KB of memory
+    private static final int MEMORY_SIZE = 4096;
     static int programCounter = 512; // program counter starts at 0x200 (512 in decimal)
-    private static final int NUM_REGISTERS = 16; // chip 8 has 16 registers (V0 to VF)
-    private static char  indeRegisterI; // index register points at locations in memory
+    private static final int NUM_REGISTERS = 16;
+    private static char  indeRegisterI;
 
-    final int WIDTH =0;
-    final int HEIGHT = 0;
+    final int WIDTH =640;
+    final int HEIGHT = 320;
 
 
     // memory setup
     // use array szie of 4096 to represent the memory of the chip 8
     private static byte[] memoryArray = new byte[MEMORY_SIZE]; // 4KB of memory
+
+    //display array
+    public static boolean[][] displayArray = new boolean[64][32];
 
     // stack setup for subroutine calls
     private Stack<Integer> stackForRegisters = new Stack<>(); // stack to store return addresses for subroutine calls
@@ -127,14 +130,27 @@ public class Chip8{
 
     // handle 00E0 opcode (clear the display)
     public void handle00E0(char opcode) {
-        return;
+        for (int row = 0; row < 32; row++) {
+            for (int col = 0; col < 64; col++) {
+                displayArray[row][col] = false;
+            }
+        }
     }
 
     // createDisplay method to set up the graphics system for the emulator
     public void createDisplay() {
         JFrame frameGUI = new JFrame("CHIP 8 emulator");
         frameGUI.setSize(WIDTH,HEIGHT);
-        
+
+        Chip8Display chip8Display = new Chip8Display(displayArray);
+
+        frameGUI.add(chip8Display);
+
+        frameGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frameGUI.setVisible(true);
+
+
     }
 
 
