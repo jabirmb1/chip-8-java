@@ -24,10 +24,14 @@ public class Chip8{
 
 
     private static byte[] memoryArray = new byte[MEMORY_SIZE];
-    private static int[] registers = new int[NUM_REGISTERS]; // v0 to vf
+    private int[] registers = new int[NUM_REGISTERS]; // v0 to vf
     public static boolean[][] displayArray = new boolean[32][64];
 
     private Stack<Integer> stackForRegisters = new Stack<>();
+
+    public int getRegister(int index) {
+        return registers[index];
+    }
     
 
     public static void main(String[] args){
@@ -52,13 +56,14 @@ public class Chip8{
                     // handle opcodes that start with 0x1
                     break;
                 case 0x6000:
-                    int x = (opcodeFetched & 0x0F00) >> 8;
-                    int nn = opcodeFetched & 0x00FF;
-                    registers[x] = nn;
+                    // sets a register
+                    chip8.handle0x6000(opcodeFetched);
 
                     break;
                 case 0x7000:
-                    // handle opcodes that start with 0x3
+                    // add value to register existing value
+                    chip8.handle0x7000(opcodeFetched);
+
                     break;
                 case 0xA000:
                     // handle opcodes that start with 0x4
@@ -125,6 +130,18 @@ public class Chip8{
                 displayArray[row][col] = false;
             }
         }
+    }
+
+    public void handle0x6000(char opcode) {
+        int x2 = (opcode & 0x0F00) >> 8;
+        int nn2 = opcode & 0x00FF;
+        registers[x2] = nn2;
+    }
+
+    public void handle0x7000(char opcode) {
+        int x3 = (opcode & 0x0F00) >> 8;
+        int nn3 = opcode & 0x00FF;
+        registers[x3] = (registers[x3] + nn3) & 0xFF; // handles overflow out of 8 bit
     }
 
     public void createDisplay() {
