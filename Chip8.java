@@ -15,19 +15,21 @@ import javax.swing.JFrame;
 
 public class Chip8{
     private static final int MEMORY_SIZE = 4096;
-    static int programCounter = 512; //  0x200 (512 in decimal) - where next instruction is
     private static final int NUM_REGISTERS = 16;
-    private static char  indeRegisterI; // where the sprite data is
 
-    final int WIDTH =640;
-    final int HEIGHT = 320;
+    private int programCounter = 0x200;
+    private int indeRegisterI = 0;
 
+    private final byte[] memoryArray = new byte[MEMORY_SIZE];
+    private final int[] registers = new int[NUM_REGISTERS];
+    private final boolean[][] displayArray = new boolean[32][64];
 
-    private static byte[] memoryArray = new byte[MEMORY_SIZE];
-    private int[] registers = new int[NUM_REGISTERS]; // v0 to vf
-    public static boolean[][] displayArray = new boolean[32][64];
+    private Chip8Display chip8Display;
 
-    private Stack<Integer> stackForRegisters = new Stack<>();
+    private final int WIDTH = 640;
+    private final int HEIGHT = 320;
+
+    private final Stack<Integer> stackForRegisters = new Stack<>();
 
     public int getRegister(int index) {
         return registers[index];
@@ -35,6 +37,10 @@ public class Chip8{
 
     public int getIndexRegister() {
         return indeRegisterI;
+    }
+
+    public boolean getPixel(int row, int col) {
+        return displayArray[row][col];
     }
     
 
@@ -47,7 +53,7 @@ public class Chip8{
 
         while (true) {
             char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
-            programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
+            chip8.programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
 
             // decode and execute the opcode
             // utilise switches
@@ -87,7 +93,7 @@ public class Chip8{
     }
 
     // load program into memory
-    public static void loadProgram(){
+    public void loadProgram(){
         String filePath = "C:\\Users\\jabir\\dev\\IBMlogo.ch8"; 
 
         try ( InputStream inputFile = new FileInputStream(filePath);){
@@ -96,7 +102,7 @@ public class Chip8{
             
             // read the file and load it into memory starting at 0x200 
             while ((bytesRead = inputFile.read()) != -1) {
-                Chip8.addToMemory(pointerInToMemory, (byte) bytesRead); // add the byte read from the file to memory at the current program counter size of bytes is 1 byte (8 bits)
+                addToMemory(pointerInToMemory, (byte) bytesRead); // add the byte read from the file to memory at the current program counter size of bytes is 1 byte (8 bits)
                 pointerInToMemory++; // move to the next memory location
             }
 
@@ -106,7 +112,7 @@ public class Chip8{
     }
 
     // add to memory protected method
-    public static void addToMemory(int address, byte value) {
+    public void addToMemory(int address, byte value) {
         if (address >= 0 && address < MEMORY_SIZE) {
             memoryArray[address] = value; // add value to memory at the specified address
         } else {
@@ -122,7 +128,7 @@ public class Chip8{
     // N- 4 bit number (0 to F)
     // NN- 8 bit number (0 to FF)
     // NNN- 12 bit number (0 to FFF) memory address
-    public static char fetchOpcode(){
+    public char fetchOpcode(){
         char firstHalf = (char) (memoryArray[programCounter] & 0xFF); // fetch the first byte of the opcode
         char secondHalf = (char) (memoryArray[programCounter + 1] & 0xFF); // fetch the second byte of the opcode
         char opcode = (char) ((firstHalf << 8) | secondHalf); // combine the two bytes to form the full opcode
@@ -151,7 +157,7 @@ public class Chip8{
     }
 
     public void handle0xA000(char opcode){
-        indeRegisterI = (char) (opcode & 0x0FFF);
+        indeRegisterI = opcode & 0x0FFF;
     }
 
     public void handle0x1000(char opcode){
@@ -190,6 +196,9 @@ public class Chip8{
             }
 
         }
+        if (chip8Display != null) {
+            chip8Display.repaint();
+        }
 
     }
 
@@ -200,7 +209,7 @@ public class Chip8{
         displayArray[5][10] = true;
         displayArray[5][11] = true;
 
-        Chip8Display chip8Display = new Chip8Display(displayArray);
+        chip8Display = new Chip8Display(displayArray);
 
         frameGUI.add(chip8Display);
 
