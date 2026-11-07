@@ -52,15 +52,12 @@ public class Chip8{
         chip8.loadProgram();
 
         while (true) {
-            char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
-            chip8.programCounter += 2; // move the program counter to the next instruction (each opcode is 2 bytes)
+            char opcodeFetched = chip8.fetchOpcode();
+            chip8.programCounter += 2;
 
-            // decode and execute the opcode
-            // utilise switches
-            // for now we will only implement a few opcodes to demonstrate the IBM logo program
             switch(opcodeFetched & 0xF000) {
                 case 0x0000:
-                    chip8.handle00E0(opcodeFetched); // handle opcodes that start with 0x0
+                    chip8.handle00E0(opcodeFetched);
                     break;
                 case 0x1000:
                     // jump to new PC
@@ -84,7 +81,6 @@ public class Chip8{
                     chip8.handle0xD000(opcodeFetched);
                     break;
 
-                // add more cases for other opcode categories as needed
                 default:
                     System.out.println("Unknown opcode: " + Integer.toHexString(opcodeFetched));
             }
@@ -99,8 +95,7 @@ public class Chip8{
         try ( InputStream inputFile = new FileInputStream(filePath);){
             int bytesRead;
             int pointerInToMemory = programCounter; // start loading at 0x200 (512 in decimal)
-            
-            // read the file and load it into memory starting at 0x200 
+
             while ((bytesRead = inputFile.read()) != -1) {
                 addToMemory(pointerInToMemory, (byte) bytesRead); // add the byte read from the file to memory at the current program counter size of bytes is 1 byte (8 bits)
                 pointerInToMemory++; // move to the next memory location
@@ -130,9 +125,9 @@ public class Chip8{
     // NN- 8 bit number (0 to FF)
     // NNN- 12 bit number (0 to FFF) memory address
     public char fetchOpcode(){
-        char firstHalf = (char) (memoryArray[programCounter] & 0xFF); // fetch the first byte of the opcode
-        char secondHalf = (char) (memoryArray[programCounter + 1] & 0xFF); // fetch the second byte of the opcode
-        char opcode = (char) ((firstHalf << 8) | secondHalf); // combine the two bytes to form the full opcode
+        char firstHalf = (char) (memoryArray[programCounter] & 0xFF);
+        char secondHalf = (char) (memoryArray[programCounter + 1] & 0xFF);
+        char opcode = (char) ((firstHalf << 8) | secondHalf);
         return opcode; 
     }
 
@@ -215,8 +210,6 @@ public class Chip8{
         frameGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         frameGUI.setVisible(true);
-
-
     }
 
 
