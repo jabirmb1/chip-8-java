@@ -48,8 +48,8 @@ public class Chip8{
         Chip8 chip8 = new Chip8();
 
         chip8.createDisplay();
-        
-        
+
+        chip8.loadProgram();
 
         while (true) {
             char opcodeFetched = chip8.fetchOpcode(); // fetch the next opcode from memory
@@ -81,7 +81,7 @@ public class Chip8{
                     chip8.handle0xA000(opcodeFetched);
                     break;
                 case 0xD000:
-                    // handle opcodes that start with 0x5
+                    chip8.handle0xD000(opcodeFetched);
                     break;
 
                 // add more cases for other opcode categories as needed
@@ -94,7 +94,7 @@ public class Chip8{
 
     // load program into memory
     public void loadProgram(){
-        String filePath = "C:\\Users\\jabir\\dev\\IBMlogo.ch8"; 
+        String filePath = "C:\\Users\\jabir\\dev\\codingprojects\\chip8\\chip-8-java\\rom\\IBMlogo.ch8";
 
         try ( InputStream inputFile = new FileInputStream(filePath);){
             int bytesRead;
@@ -109,6 +109,7 @@ public class Chip8{
         } catch (IOException e) {
             System.out.println("Error loading program: " + e.getMessage());
         }
+        System.out.println("ROM loaded successfully");
     }
 
     // add to memory protected method
@@ -206,8 +207,6 @@ public class Chip8{
     public void createDisplay() {
         JFrame frameGUI = new JFrame("CHIP 8 emulator");
         frameGUI.setSize(WIDTH,HEIGHT);
-        displayArray[5][10] = true;
-        displayArray[5][11] = true;
 
         chip8Display = new Chip8Display(displayArray);
 
